@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES6",
+        "outFile": "../bin/world.js"
+    },
+    "files": [
+        "living.ts",
+        "player.ts",
+        "room.ts",
+        "area.ts",
+        "world.ts"
+        ]
+}

@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "module": "commonjs"
+    },
+    "filesGlob": [
+        "./server/*.ts",
+        "./world/*.ts"
+    ],
+    "exclude": [
+        "./.c9/**/*"
+    ]
+}

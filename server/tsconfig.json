@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES6",
+        "outFile": "../bin/server.js",
+        "declaration": true
+    },
+    "files" : [
+        "mudserver.ts",
+        "connectionManager.ts",
+        "socketConnection.ts",
+        "messageBuilder.ts"
+        ]
+}
