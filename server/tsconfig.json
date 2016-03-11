@@ -2,10 +2,11 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES6",
-        "outFile": "../bin/server.js",
         "declaration": true
     },
     "files" : [
+        "dbAdaptor.ts",
+        "sqlite3Adaptor",
         "mudserver.ts",
         "connectionManager.ts",
         "socketConnection.ts",

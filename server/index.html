@@ -40,6 +40,10 @@
         socket.on('toPlayer', function (data) {
           outputToConsole(data.data);
         });
+        
+        socket.on('disconnect', function (data) {
+            outputToConsole("Disconnected from Server");
+        })
 
         function processCommand() {
             var inField = $("#in");

@@ -1,7 +1,16 @@
 'use strict';
-export class living {
+// exportinterface Iliving {
+//     stats: {
+//         maxHP: number,
+//         curHP: number,
+//         maxSP: number,
+//         curSP: number
+//     }
+// }
+
+abstract class living {
     constructor() {
         
     }
-    protected hp: number = 100;
+    abstract absMethod2();
 }

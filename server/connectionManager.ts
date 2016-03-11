@@ -12,14 +12,8 @@ export class connectionManager {
         this._sockServer.on('connection', function (socket) {
             var sc = new socketConnection(socket);
             var p = new player(sc);
-            if (!world.players)
-                world.players = new Array<player>();
-            world.players.push(p);
-            
             //self.onConnection(socketConnection);
         });
     };
-    
-    
     private _sockServer: SocketIO.Server;
 }

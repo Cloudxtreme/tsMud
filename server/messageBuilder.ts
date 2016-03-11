@@ -5,11 +5,11 @@ export class message {
         this.textArr.push(init);
     }
     public toString(): string {
-        var returnstr = "<p>";
+        var returnstr = "<div>";
         for (var i = 0;i < this.textArr.length;i++) {
             returnstr += this.textArr[i];
         }
-        return returnstr + "</p>";
+        return returnstr + "</div>";
     }
     private textArr: Array<string>;
     public addText(text: string): message {

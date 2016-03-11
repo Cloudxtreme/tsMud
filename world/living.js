@@ -1,7 +1,14 @@
 'use strict';
-class living {
-    constructor() {
-        this.hp = 100;
+// exportinterface Iliving {
+//     stats: {
+//         maxHP: number,
+//         curHP: number,
+//         maxSP: number,
+//         curSP: number
+//     }
+// }
+var living = (function () {
+    function living() {
     }
-}
-exports.living = living;
+    return living;
+})();

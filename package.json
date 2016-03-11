@@ -1,0 +1,19 @@
+{
+  "name": "jsmud",
+  "version": "0.0.1",
+  "description": "Mud written in typescript",
+  "main": "start.js",
+  "script": {
+    "start": "node start.js"
+  },
+  "dependencies": {
+    "mongodb": "^2.1.7",
+    "mongoose": "^4.4.2",
+    "node": "^0.0.0",
+    "socket.io": "^1.4.5",
+    "typescript-require": "^0.2.9-1"
+  },
+  "devDependencies": {},
+  "author": "Shaun Edwards",
+  "license": "ISC"
+}

@@ -5,6 +5,7 @@
         "outFile": "../bin/world.js"
     },
     "files": [
+        "worldobj.ts",
         "living.ts",
         "player.ts",
         "room.ts",

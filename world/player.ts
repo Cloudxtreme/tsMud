@@ -1,13 +1,22 @@
 'use strict';
 
-import {living} from "./living";
+/// <reference path="living.d.ts" />
+
+//import {living} from "./living";
 import {command} from "./command";
+import {world} from "./world";
 import {socketConnection} from "../server/socketConnection";
+import {message} from "../server/messageBuilder";
+import {mudObject} from "../server/mudObject";
 import generalCommands = require("./commands/generalCommands");
 
-export class player extends living {
+export interface iPlayer {
+    
+}
+
+export class player extends mudObject {
     constructor(public socketConn: socketConnection) {
-        super();
+        //super();
         this.socket = socketConn;
         this.socket.player = this;
     }
@@ -23,6 +32,12 @@ export class player extends living {
         return this._name;
     }
     
+    public state: string;
+    
+    public absMethod2() {
+        
+    }
+    
     private socket: socketConnection;
     
     public parseInput(data): void {
@@ -30,18 +45,17 @@ export class player extends living {
         var input = data.data;
         var inputCmd = input.split(" ")[0];
         var args = input.split(" ").slice(1);
-        var commandList = this.getGeneralCommands();
-        for (var cmd in commandList) {
-            if (commandList[cmd].handle.toLocaleLowerCase() === inputCmd.toLocaleLowerCase()) {
-                var cmd = new commandList[cmd](this, args);
-                cmd.doCommand();
-                foundCommand = true;
-                break;
-            }
+        var cmd: any = this.getCommand(inputCmd, this, args);
+        if (cmd) {
+            cmd.doCommand();
+        } else {
+            this.playerMessage(new message("Command '").addText(inputCmd).addText("' does not exist, please try again.").toString())
         }
-        if (!foundCommand) {
-            this.playerMessage(new message("Command: ").addText(cmd).addText(" does not exist, please try again."))
-        }
+    }
+    
+    get connectionMessage(): string { 
+        var msg = new message("Welcome, ").addText(this.capName).colorMessage("yellow").toString();
+        return msg.toString();
     }
     
     private getGeneralCommands(): any {
@@ -52,8 +66,26 @@ export class player extends living {
         this.socket.broadcast(text, playerMessage);
     };
 
-       public playerMessage(text: string) {
+   public playerMessage(text: string) {
         this.socket.playerMessage(text);
     };
     
+    public getCommand(handle: string, player, args): command {
+        var commandList = this.getGeneralCommands();
+        for (var cmd in commandList) {
+            if (commandList[cmd].handle.toLocaleLowerCase() === handle.toLocaleLowerCase()) {
+                return new commandList[cmd](player, args);
+            }
+        }
+        return;
+    }
+    
+    public enterWorld() {
+        world.addPlayer(this);
+        this.state = "active";
+    }
+    
+    public leaveWorld() {
+        world.removePlayer(this);
+    }
 }

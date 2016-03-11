@@ -3,32 +3,29 @@
 var messageBuilder_1 = require("./messageBuilder");
 class socketConnection {
     constructor(socket) {
-        this._socketid = "";
         this._loggedIn = false;
         this._usernameReceived = false;
         this._passwordReceived = false;
         var self = this;
         this._socket = socket;
-        this.playerMessage(this.loginMessage);
         this._socket.on('toServer', function (data) {
             self.dataReceived(data);
         });
-        //this._socket.on('disconnect', function (data) {
-        //self.onDisconnect(this);
-        //});
+        this._socket.on('disconnect', function () {
+            self.player.state = "linkdead";
+            //TODO: force a quit command to remove, or remove on timeout. For now isntantly remove from world on DC
+            self.player.leaveWorld();
+        });
+        this.playerMessage(this.connectionMessage, true);
     }
     ;
-    get loginMessage() {
+    get connectionMessage() {
         var msg = new messageBuilder_1.message("Welcome to jsMud!")
             .addDoubleLineBreak().addText("Please enter your username: ").colorMessage("deepskyblue")
             .formatMessage("bold").toString();
         return msg.toString();
     }
     get socket() { return this._socket; }
-    get socketid() { return this._socketid; }
-    get username() {
-        return this._username;
-    }
     dataReceived(data) {
         if (this._loggedIn) {
             this.player.parseInput(data);
@@ -36,13 +33,13 @@ class socketConnection {
         else {
             if (!this._usernameReceived) {
                 this._usernameReceived = true;
-                this.playerMessage(new messageBuilder_1.message("Please enter your password.").colorMessage("deepskyblue").toString());
-                this._username = data.data;
+                this.playerMessage(new messageBuilder_1.message("Please enter your password:").colorMessage("deepskyblue").toString(), true);
                 this.player.name = data.data;
             }
             else {
                 this._loggedIn = true;
-                this.broadcast(new messageBuilder_1.message(this._username + ' connected').colorMessage("red").toString(), new messageBuilder_1.message('You have logged in').colorMessage("red").toString());
+                this.broadcast(new messageBuilder_1.message(this.player.capName + ' connected').colorMessage("red").toString(), new messageBuilder_1.message('You have logged in').colorMessage("red").toString());
+                this.player.enterWorld();
             }
         }
     }
@@ -53,21 +50,15 @@ class socketConnection {
             this.playerMessage(playerMessage);
     }
     ;
-    roomMessage(text, room) {
-        this._socket.to(room).emit('toPlayer', { data: text });
+    playerMessage(text, gagPrompt) {
+        if (gagPrompt)
+            this._socket.emit('toPlayer', { data: text });
+        else
+            this._socket.emit('toPlayer', { data: text + this.getPrompt() });
     }
     ;
-    channelMessage(text, channel) {
-        this.roomMessage(text, channel);
+    getPrompt() {
+        return new messageBuilder_1.message("").addLineBreak().addText(">").toString();
     }
-    ;
-    privateMessage(text, player) {
-        this.roomMessage(text, player.socket.id);
-    }
-    ;
-    playerMessage(text) {
-        this._socket.emit('toPlayer', { data: text });
-    }
-    ;
 }
 exports.socketConnection = socketConnection;

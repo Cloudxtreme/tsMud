@@ -1,10 +1,12 @@
 'use strict';
-var living_1 = require("./living");
+var world_1 = require("./world");
+var messageBuilder_1 = require("../server/messageBuilder");
+var mudObject_1 = require("../server/mudObject");
 var generalCommands = require("./commands/generalCommands");
-class player extends living_1.living {
+class player extends mudObject_1.mudObject {
     constructor(socketConn) {
-        super();
         this.socketConn = socketConn;
+        //super();
         this.socket = socketConn;
         this.socket.player = this;
     }
@@ -17,23 +19,24 @@ class player extends living_1.living {
     get name() {
         return this._name;
     }
+    absMethod2() {
+    }
     parseInput(data) {
         var foundCommand = false;
         var input = data.data;
         var inputCmd = input.split(" ")[0];
         var args = input.split(" ").slice(1);
-        var commandList = this.getGeneralCommands();
-        for (var cmd in commandList) {
-            if (commandList[cmd].handle.toLocaleLowerCase() === inputCmd.toLocaleLowerCase()) {
-                var cmd = new commandList[cmd](this, args);
-                cmd.doCommand();
-                foundCommand = true;
-                break;
-            }
+        var cmd = this.getCommand(inputCmd, this, args);
+        if (cmd) {
+            cmd.doCommand();
         }
-        if (!foundCommand) {
-            this.playerMessage(new message("Command: ").addText(cmd).addText(" does not exist, please try again."));
+        else {
+            this.playerMessage(new messageBuilder_1.message("Command '").addText(inputCmd).addText("' does not exist, please try again.").toString());
         }
+    }
+    get connectionMessage() {
+        var msg = new messageBuilder_1.message("Welcome, ").addText(this.capName).colorMessage("yellow").toString();
+        return msg.toString();
     }
     getGeneralCommands() {
         return generalCommands;
@@ -46,5 +49,21 @@ class player extends living_1.living {
         this.socket.playerMessage(text);
     }
     ;
+    getCommand(handle, player, args) {
+        var commandList = this.getGeneralCommands();
+        for (var cmd in commandList) {
+            if (commandList[cmd].handle.toLocaleLowerCase() === handle.toLocaleLowerCase()) {
+                return new commandList[cmd](player, args);
+            }
+        }
+        return;
+    }
+    enterWorld() {
+        world_1.world.addPlayer(this);
+        this.state = "active";
+    }
+    leaveWorld() {
+        world_1.world.removePlayer(this);
+    }
 }
 exports.player = player;
